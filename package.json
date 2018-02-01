@@ -1,0 +1,18 @@
+{
+  "name": "dyplom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "three": "^0.89.0",
+    "jquery": "latest",
+    "html-webpack-plugin": "latest"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "start": "webpack"
+  },
+  "author": "Vitalii Ivantsiv",
+  "license": "ISC"
+}
