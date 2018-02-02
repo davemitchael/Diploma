@@ -7,7 +7,6 @@
     "babylonjs": "^3.2.0-alpha7",
     "html-webpack-plugin": "latest",
     "jquery": "latest",
-    "three": "^0.89.0",
     "webpack": "^3.10.0"
   },
   "devDependencies": {},
