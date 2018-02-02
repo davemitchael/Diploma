@@ -1,5 +1,5 @@
-import * as $ from 'jquery/dist/jquery';
-import * as THREE from 'three';
+/*import * as $ from 'jquery/dist/jquery';
+import * as THREE from 'three/build/three.module';
 //import * as THREE from "../libs/three.module";
 
 $(function () {
@@ -13,7 +13,7 @@ $(function () {
     // create a render and set the size
     const renderer = new THREE.WebGLRenderer();
 
-    renderer.setClearColor(0xEEEEEE, 1.0);
+    renderer.setClearColor("#0e0e0e", 1.0);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMapEnabled = true;
 
@@ -66,7 +66,7 @@ $(function () {
     camera.lookAt(scene.position);
 
     // add subtle ambient lighting
-    const ambientLight = new THREE.AmbientLight(0x0c0c0c);
+    const ambientLight = new THREE.AmbientLight("#0c0c0c");
     scene.add(ambientLight);
 
     // add spotlight for the shadows
@@ -97,4 +97,104 @@ $(function () {
         requestAnimationFrame(render);
         renderer.render(scene, camera);
     }
-});
+});*/
+
+import * as BABYLON from 'babylonjs'
+
+let canvas, engine, scene, camera, score = 0;
+// noinspection JSAnnotator
+let TOAD_MODEL;
+let ENDINGS = [];
+let ENEMIES = [];
+
+document.addEventListener("DOMContentLoaded", function () {
+    if(BABYLON.Engine.isSupported()){
+        initScene();
+        initGame();
+    }
+},false);
+
+function initScene() {
+    canvas = document.getElementById('renderCanvas');
+
+    engine = new BABYLON.Engine(canvas, true);
+
+    scene = new BABYLON.Scene(engine);
+
+    camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0,4,-10),scene);
+    camera.setTarget(new BABYLON.Vector3(0,0,10));
+    camera.attachControl(canvas);
+
+    let light = new BABYLON.PointLight("light", new BABYLON.Vector3(0,5,-5),scene);
+
+    engine.runRenderLoop(function () {
+        scene.render();
+    })
+}
+
+function initGame() {
+    let LANE_NUMBER = 3;
+    let LANE_INTERVAL = 5;
+    let LANES_POSITIONS = [];
+
+    let createLane = function (id, position) {
+        let lane = BABYLON.Mesh.CreateBox("lane" + id, 1, scene);
+        lane.scaling.y = 0.1;
+        lane.scaling.x = 3;
+        lane.scaling.z = 800;
+        lane.position.x = position;
+        lane.position.z = lane.scaling.z / 2 - 200;
+    };
+
+    let createEnding = function (id, position) {
+        const ending = BABYLON.Mesh.CreateGround(id, 3, 4, 1, scene);
+        ending.position.x = position;
+        ending.position.y = 0.1;
+        ending.position.z = 1;
+        const mat = new BABYLON.StandardMaterial("endingMat", scene);
+        mat.diffuseColor = new BABYLON.Color3(0.8, 0.2, 0.2);
+        ending.material = mat;
+        return ending;
+    };
+
+    let currentLanePosition = LANE_INTERVAL * -1 * (LANE_NUMBER / 2);
+    for (let i = 0; i < LANE_NUMBER; i++) {
+        LANES_POSITIONS[i] = currentLanePosition;
+        createLane(i, currentLanePosition);
+        const e = createEnding(i, currentLanePosition);
+        ENDINGS.push(e);
+        currentLanePosition += LANE_INTERVAL;
+    }
+
+    // Adjust camera position
+    camera.position.x = LANES_POSITIONS[Math.floor(LANE_NUMBER / 2)];
+
+    BABYLON.SceneLoader.ImportMesh("toad", "src/assets/", "toad.babylon", scene, function (meshes) {
+        let m = meshes[0];
+        m.isVisible = false;
+        m.scaling = new BABYLON.Vector3(0.5, 0.5, 0.5);
+        TOAD_MODEL = m;
+    });
+
+    let createEnemy = function () {
+        let posZ = 100;
+
+        let posX = LANES_POSITIONS[Math.floor(Math.random() * LANE_NUMBER)];
+
+        let shroom = TOAD_MODEL.clone(TOAD_MODEL.name);
+        shroom.id = TOAD_MODEL.name + (ENEMIES.length + 1);
+        shroom.killed = false;
+        shroom.isVisible = true;
+        shroom.position = new BABYLON.Vector3(posX, shroom.position.y / 2, posZ);
+        ENEMIES.push(shroom);
+
+    };
+
+    setInterval(createEnemy, 1000);
+}
+
+
+
+
+
+

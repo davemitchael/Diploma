@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "three": "^0.89.0",
+    "babylonjs": "^3.2.0-alpha7",
+    "html-webpack-plugin": "latest",
     "jquery": "latest",
-    "html-webpack-plugin": "latest"
+    "three": "^0.89.0",
+    "webpack": "^3.10.0"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "scripts": {
     "start": "webpack"
   },
